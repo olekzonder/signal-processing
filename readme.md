@@ -45,6 +45,7 @@ docker run -p 8888:8888 signal-processing
 - АЧС сигнала.
 
 #### Примеры графиков
-![[img/img.png]]
 
-![[img/img2.png]]
+![](img/img.png)
+
+![](img/img2.png)
