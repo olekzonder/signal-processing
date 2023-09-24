@@ -5,11 +5,11 @@ task1_ui <- function(id){
     titlePanel("Расчет АЧС АМ-сигнала"),
     sidebarLayout(
       sidebarPanel(
-        sliderInput(ns("u0"), "U₀, мВ", min = 1, max = 25, value = 1),
-        sliderInput(ns("f0"), "f₀, МГц", min = 100, max = 200, value = 100),
-        sliderInput(ns("m1"), "m₁, %", min = 0, max = 100, value = 100),
-        sliderInput(ns("fm1"), "Fₘ₁, КГц", min = 200, max = 2000, value = 200),
-        checkboxInput(ns("env"),"Отобразить огибающую (низкая точность)"),
+        sliderInput(ns("u0"), "Амплитуда несущих колебаний u0, мВ", min = 1, max = 25, value = 1),
+        sliderInput(ns("f0"), "Частота несущих колебаний f0, МГц", min = 100, max = 200, value = 100),
+        sliderInput(ns("m1"), "Глубина амплитудной модуляции m1, %", min = 0, max = 100, value = 100),
+        sliderInput(ns("fm1"), "Частота колебаний модулирующего сигнала Fm1, КГц", min = 200, max = 2000, value = 200),
+        checkboxInput(ns("env"),"Отобразить огибающую"),
         uiOutput(ns("header")),
         uiOutput(ns("formula"))
       ),
@@ -51,26 +51,24 @@ task1_server <- function(id){
       u0 <- input$u0 * 10^-3
       f0 <- input$f0 * 10^6
       m1 <- input$m1 / 100
-      fm1 <- input$fm1 * 10^3
-      x <- seq(0, 3/fm1, length.out = 1000)
-      y <- u0*cos(2*pi*f0*x) + (0.5*(m1*u0))*cos(2*pi*(f0+fm1)*x) + (0.5*(m1*u0))*cos(2*pi*(f0-fm1)*x)
-      df <- data.frame(x = x, y = y)
+      fm1 <- input$fm1 *10^3
+      x <- seq(0, 3/fm1, length.out=round(5/f0*10^11,digits=-3))
+      y <- u0*cos(2*pi*f0*x) + (0.5*(m1*u0))*cos(2*pi*(f0+fm1)*x) + (0.5*(m1*u0))*cos(2*pi*(f0-fm1)*x) #u0*sin(2*pi*f0*x)+m1*u0/2*cos(2*pi*(f0+fm1)*x)+m1*u0/2*sin(x*(f0-fm1))
+      df <- data.frame(x = x*10^6, y = y*10^3)
       p <- ggplot(df, aes(x=x)) +
         geom_line(aes(y=y)) +
-        labs(x = "t, с", y = "Uам(t), В") +
-        theme(axis.line = element_line(arrow = arrow(angle = 15, length = unit(.15,"inches"),type = "closed"))) + 
+        labs(x = "t, мкс", y = "Uам(t), мВ") +
+        theme(axis.line.y = element_line(arrow = grid::arrow(length = unit(0.3, "cm")))) +
         theme(panel.grid.major = element_line(color = "grey",linewidth = 0.5,linetype = 2)) + 
-        theme(panel.grid.minor = element_line(color = "grey",linewidth = 0.25,linetype = 2)) + 
+        theme(panel.grid.minor = element_line(color = "grey",linewidth = 0.25,linetype = 2)) +
         ggtitle("Временная диаграмма однотонального АМ сигнала")
       if(input$env){
         hilbert <- env(y,fm1)
-        df2 <- data.frame(x=x, y = hilbert)
         p = p +
-        geom_line(aes(y=hilbert),color='red',linetype='dashed') +
-        geom_line(aes(y=-hilbert),color='red',linetype='dashed')
+        geom_line(aes(y=hilbert*10^3),color='red', linetype='dashed', linewidth=1.25) +
+        geom_line(aes(y=-hilbert*10^3),color='red',linetype='dashed',linewidth=1.25)
       }
-      p <- p + scale_x_continuous(expand = c(0, 0), breaks=c(0,1/fm1,2/fm1,3/fm1))
-      # scale_y_continuous(breaks=c(-u0,0,u0))
+      p <- p + scale_x_continuous(expand = c(0, 0),breaks=c(10^6/fm1,2*10^6/fm1,3*10^6/fm1)) + ylim(1.25*min(df$y),1.25*max(df$y))
       p
     })
       output$output_plot2 <- renderPlot({
