@@ -28,4 +28,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/signal-processing:${{ github.event.repository.updated_at}}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/signal-processing:$(date +%Y%m%d%H%M)
