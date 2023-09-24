@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - 
+        name: Set current date as env variable
+        run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
       -
         name: Checkout
         uses: actions/checkout@v4
@@ -28,4 +31,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/signal-processing:$(date +'%d.%m.%Y')
+          tags: |
+                  ${{ secrets.DOCKERHUB_USERNAME }}/signal-processing:$NOW
+                  ${{ secrets.DOCKERHUB_USERNAME }}/signal-processing:latest
