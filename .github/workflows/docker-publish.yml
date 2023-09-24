@@ -18,6 +18,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Set current date as env variable
+        run: echo "NOW=$(date +'%d-%m-%Y')"
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -28,4 +31,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/signal-processing:${{ steps.date.outputs.date }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/signal-processing:$NOW
