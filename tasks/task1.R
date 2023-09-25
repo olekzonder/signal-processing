@@ -10,13 +10,23 @@ task1_ui <- function(id){
         sliderInput(ns("m1"), "Глубина амплитудной модуляции m1, %", min = 0, max = 100, value = 100),
         sliderInput(ns("fm1"), "Частота колебаний модулирующего сигнала Fm1, КГц", min = 200, max = 2000, value = 200),
         checkboxInput(ns("env"),"Отобразить огибающую"),
-        uiOutput(ns("header")),
-        uiOutput(ns("formula"))
+        uiOutput(ns("header1")),
+        uiOutput(ns("formula1")),
+        uiOutput(ns("header2")),
+        uiOutput(ns("formula2")),
+        uiOutput(ns("header3")),
+        uiOutput(ns("formula3"))
       ),
       mainPanel(
-      
+      uiOutput(ns("task11")),
       plotOutput(ns("output_plot1")),
-      plotOutput(ns("output_plot2"))
+      plotOutput(ns("output_plot2")),
+      uiOutput(ns("task12")),
+      plotOutput(ns("output_plot3")),
+      plotOutput(ns("output_plot4")),
+      uiOutput(ns("task13")),
+      plotOutput(ns("output_plot5")),
+      plotOutput(ns("output_plot6")),
     )
     )
   )
@@ -27,11 +37,25 @@ task1_server <- function(id){
     id,
     function(input,output,session){
       ns <- session$ns
-      output$header <- renderUI({
-        h4("Решение задачи:")
+      output$header1 <- renderUI({
+        h4("Решение задачи 1.1:")
       })
-
-      output$formula <- renderUI({
+      output$header2 <- renderUI({
+        h4("Решение задачи 1.2:")
+      })
+      output$header3 <- renderUI({
+        h4("Решение задачи 1.3:")
+      })
+      output$task11 <- renderUI({
+        h5("Условие 1.1:")
+      })
+      output$task12 <- renderUI({
+        h5("Условие 1.2:")
+      })
+      output$task13 <- renderUI({
+        h5("Условие 1.3:")
+      })
+      output$formula1 <- renderUI({
       u0 <- input$u0 * 10^-3
       f0 <- input$f0 * 10^6
       m1 <- input$m1 / 100
@@ -43,6 +67,40 @@ task1_server <- function(id){
                 paste("\\Delta f_c = 2F_{м1} = ", 2*fm1/10^3, "\\spaceкГц"),
                 paste("\\frac{1}{F_м} = ", round((1/fm1)*10^6,digits=4), "\\spaceмкс"),
                 paste("\\frac{1}{f_0} = ", round((1/f0)*10^6,digits=4), "\\spaceмкс"))
+      foreach(i = output) %do%{
+        withMathJax(paste0("$$",i,"$$"))
+      }
+    })
+      output$formula2 <- renderUI({
+      u0 <- input$u0 * 10^-3
+      f0 <- input$f0 * 10^6
+      m1 <- input$m1 / 100
+      fm1 <- input$fm1 * 10^3
+      output <- c(paste("A_0 = U_0 =", input$u0, "\\spaceмВ"),
+                paste("A_{н1\\spaceбок} = A_{в1\\spaceбок} = A_{н2\\spaceбок} = A_{в2\\spaceбок} = \\frac{m_1*U_0}{2} = ", m1*u0/2/10^-3, "\\spaceмВ"),
+                paste("f_{н2\\spaceбок} = f_0 - F_{м2} =",(f0 - 2*fm1)/10^6, "\\spaceМГц"),
+                paste("f_{н1\\spaceбок} = f_0 - F_{м1} =",(f0 - fm1)/10^6, "\\spaceМГц"),
+                paste("f_{в1\\spaceбок} = f_0 + F_{м1} =",(f0 + fm1)/10^6, "\\spaceМГц"),
+                paste("f_{в2\\spaceбок} = f_0 + F_{м2} =",(f0 + 2*fm1)/10^6, "\\spaceМГц"),
+                paste("\\Delta f_c = 4F_{м1} = ", 4*fm1/10^3, "\\spaceкГц"))
+      foreach(i = output) %do%{
+        withMathJax(paste0("$$",i,"$$"))
+      }
+    })
+
+      output$formula3 <- renderUI({
+      u0 <- input$u0 * 10^-3
+      f0 <- input$f0 * 10^6
+      m1 <- input$m1 / 100
+      fm1 <- input$fm1 * 10^3
+      output <- c(paste("A_0 = U_0 =", input$u0, "\\spaceмВ"),
+                paste("A_{н1\\spaceбок} = A_{в1\\spaceбок} = \\frac{m_1*U_0}{2} = ", m1*u0/2/10^-3, "\\spaceмВ"),
+                paste("A_{н2\\spaceбок} = A_{в2\\spaceбок} = \\frac{m_2*U_0}{2} = ", (m1/2)*u0/2/10^-3, "\\spaceмВ"),
+                paste("f_{н2\\spaceбок} = f_0 - F_{м2} =",(f0 - 2*fm1)/10^6, "\\spaceМГц"),
+                paste("f_{н1\\spaceбок} = f_0 - F_{м1} =",(f0 - fm1)/10^6, "\\spaceМГц"),
+                paste("f_{в1\\spaceбок} = f_0 + F_{м1} =",(f0 + fm1)/10^6, "\\spaceМГц"),
+                paste("f_{в2\\spaceбок} = f_0 + F_{м2} =",(f0 + 2*fm1)/10^6, "\\spaceМГц"),
+                paste("\\Delta f_c = 4F_{м1} = ", 4*fm1/10^3, "\\spaceкГц"))
       foreach(i = output) %do%{
         withMathJax(paste0("$$",i,"$$"))
       }
@@ -92,5 +150,114 @@ task1_server <- function(id){
         theme(panel.grid.minor = element_line(color = "grey",linewidth = 0.25,linetype = 2)) + 
         theme(axis.text.y = element_text(hjust = 1)) +
         ggtitle("АЧС радиосигнала с однотональной АМ")
+      })
+    output$output_plot3 <- renderPlot({
+      u0 <- input$u0 * 10^-3
+      f0 <- input$f0 * 10^6
+      m1 <- input$m1 / 100
+      fm1 <- input$fm1 *10^3
+      x <- seq(0, 3/fm1, length.out=round(5/f0*10^11,digits=-3))
+      y <- u0*cos(2*pi*f0*x) + (u0*m1/2)*cos(2*pi*(f0+fm1)*x) + (u0*m1/2)*cos(2*pi*(f0-fm1)*x) + (u0*m1/2)*cos(2*pi*(f0+2*fm1)*x) + (u0*m1/2)*cos(2*pi*(f0-2*fm1)*x)
+      df <- data.frame(x = x*10^6, y = y*10^3)
+      p <- ggplot(df, aes(x=x)) +
+        geom_line(aes(y=y)) +
+        labs(x = "t, мкс", y = "Uам(t), мВ") +
+        theme(axis.line.y = element_line(arrow = grid::arrow(length = unit(0.3, "cm")))) +
+        theme(panel.grid.major = element_line(color = "grey",linewidth = 0.5,linetype = 2)) + 
+        theme(panel.grid.minor = element_line(color = "grey",linewidth = 0.25,linetype = 2)) +
+        ggtitle("Временная диаграмма двухтонального АМ сигнала")
+      if(input$env){
+        hilbert <- env(y,fm1)
+        p = p +
+        geom_line(aes(y=hilbert*10^3),color='red', linetype='dashed', linewidth=1.25) +
+        geom_line(aes(y=-hilbert*10^3),color='red',linetype='dashed',linewidth=1.25)
+      }
+      p <- p + scale_x_continuous(expand = c(0, 0))
+      p
+    })
+
+      output$output_plot4 <- renderPlot({
+        u0 <- input$u0 * 10^-3
+        f0 <- input$f0 * 10^6
+        m1 <- input$m1 / 100
+        fm1 <- input$fm1 * 10^3
+        x <- seq(0,f0+2*fm1)
+        y <- seq(0,u0+1)
+        df <- data.frame(x=c((f0-2*fm1)/10^6,
+        (f0-fm1)/10^6,
+        f0/10^6,
+        (f0+fm1)/10^6, 
+        (f0+2*fm1)/10^6),
+        y=c((u0*m1/2)*10^3,
+        (u0*m1/2)*10^3,
+        u0*10^3,
+        (u0*m1/2)*10^3,
+        (u0*m1/2)*10^3),label=c("А2н.бок","А1н.бок", "А0", "А1в.бок", "А2в.бок"))
+        ggplot(df, aes(x=x, y=y))+
+        geom_point()+
+        geom_segment(aes(x = x, y = 0, xend = x, yend = y), linetype = "dashed")+
+        labs(x = "f, МГц", y = "S(f), мВ") +
+        geom_text(aes(label = label), nudge_x = 0, nudge_y = (u0*10^3)/12.5)+
+        scale_y_continuous(expand=c(0, 0),limit=c(0,(u0*(10^3)+(u0*10^3)/10)))+
+        theme(axis.line = element_line(arrow = arrow(angle = 15, length = unit(.15,"inches"),type = "closed"))) + 
+        theme(panel.grid.major = element_line(color = "grey",linewidth = 0.5,linetype = 2)) + 
+        theme(panel.grid.minor = element_line(color = "grey",linewidth = 0.25,linetype = 2)) + 
+        theme(axis.text.y = element_text(hjust = 1)) +
+        ggtitle("АЧС радиосигнала с двухтональной АМ")
+      })
+
+    output$output_plot5 <- renderPlot({
+      u0 <- input$u0 * 10^-3
+      f0 <- input$f0 * 10^6
+      m1 <- input$m1 / 100
+      fm1 <- input$fm1 *10^3
+      x <- seq(0, 3/fm1, length.out=round(5/f0*10^11,digits=-3))
+      y <- u0*cos(2*pi*f0*x) + (u0*m1/2)*cos(2*pi*(f0+fm1)*x) + (u0*m1/2)*cos(2*pi*(f0-fm1)*x) + ((u0/2)*m1/2)*cos(2*pi*(f0+2*fm1)*x) + ((u0/2)*m1/2)*cos(2*pi*(f0-2*fm1)*x)
+      df <- data.frame(x = x*10^6, y = y*10^3)
+      p <- ggplot(df, aes(x=x)) +
+        geom_line(aes(y=y)) +
+        labs(x = "t, мкс", y = "Uам(t), мВ") +
+        theme(axis.line.y = element_line(arrow = grid::arrow(length = unit(0.3, "cm")))) +
+        theme(panel.grid.major = element_line(color = "grey",linewidth = 0.5,linetype = 2)) + 
+        theme(panel.grid.minor = element_line(color = "grey",linewidth = 0.25,linetype = 2)) +
+        ggtitle("Временная диаграмма двухтонального АМ сигнала")
+      if(input$env){
+        hilbert <- env(y,fm1)
+        p = p +
+        geom_line(aes(y=hilbert*10^3),color='red', linetype='dashed', linewidth=1.25) +
+        geom_line(aes(y=-hilbert*10^3),color='red',linetype='dashed',linewidth=1.25)
+      }
+      p <- p + scale_x_continuous(expand = c(0, 0))
+      p
+    })
+
+      output$output_plot6 <- renderPlot({
+        u0 <- input$u0 * 10^-3
+        f0 <- input$f0 * 10^6
+        m1 <- input$m1 / 100
+        fm1 <- input$fm1 * 10^3
+        x <- seq(0,f0+2*fm1)
+        y <- seq(0,u0+1)
+        df <- data.frame(x=c((f0-2*fm1)/10^6,
+        (f0-fm1)/10^6,
+        f0/10^6,
+        (f0+fm1)/10^6, 
+        (f0+2*fm1)/10^6),
+        y=c(((u0/2)*m1/2)*10^3,
+        (u0*m1/2)*10^3,
+        u0*10^3,
+        (u0*m1/2)*10^3,
+        ((u0/2)*m1/2)*10^3),label=c("А2н.бок","А1н.бок", "А0", "А1в.бок", "А2в.бок"))
+        ggplot(df, aes(x=x, y=y))+
+        geom_point()+
+        geom_segment(aes(x = x, y = 0, xend = x, yend = y), linetype = "dashed")+
+        labs(x = "f, МГц", y = "S(f), мВ") +
+        geom_text(aes(label = label), nudge_x = 0, nudge_y = (u0*10^3)/12.5)+
+        scale_y_continuous(expand=c(0, 0),limit=c(0,(u0*(10^3)+(u0*10^3)/10)))+
+        theme(axis.line = element_line(arrow = arrow(angle = 15, length = unit(.15,"inches"),type = "closed"))) + 
+        theme(panel.grid.major = element_line(color = "grey",linewidth = 0.5,linetype = 2)) + 
+        theme(panel.grid.minor = element_line(color = "grey",linewidth = 0.25,linetype = 2)) + 
+        theme(axis.text.y = element_text(hjust = 1)) +
+        ggtitle("АЧС радиосигнала с двухтональной АМ")
       })
     })}
