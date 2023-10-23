@@ -1,28 +1,22 @@
-task2_ui <- function(id){
+  task2_ui <- function(id){
   ns = NS(id)
   uiOutput(ns("task2"))
   fluidPage(
+    titlePanel("Амплитудно-частотный спектр импульсной последоватлеьности"),
     titlePanel("Расчет АЧС АМ-сигнала"),
     sidebarLayout(
       sidebarPanel(
-        sliderInput(ns("u0"), "Амплитуда несущих колебаний u0, мВ", min = 1, max = 25, value = 1),
-        sliderInput(ns("f0"), "Частота несущих колебаний f0, МГц", min = 100, max = 200, value = 100),
-        sliderInput(ns("m1"), "Глубина амплитудной модуляции m1, %", min = 0, max = 100, value = 100),
-        sliderInput(ns("fm1"), "Частота колебаний модулирующего сигнала Fm1, КГц", min = 200, max = 2000, value = 200),
-        checkboxInput(ns("env"),"Отобразить огибающую"),
-        selectInput(ns("dropdown"), "Выберите условие", c("Условие 1.1","Условие 1.2","Условие 1.3")),
-        uiOutput(ns("header")),
-        uiOutput(ns("formula")),
-      ),
-      mainPanel(
-      uiOutput(ns("task")),
-      plotOutput(ns("output_plot1")),
-      plotOutput(ns("output_plot2"))
-    )
-    )
+                sliderInput(ns("a"), "Амплитуда A, мВ", min = 1, max = 25, value = 1),
+        sliderInput(ns("tu1"), "Период импульса tu1, мкс", min = 1, max = 25, value = 1),
+        sliderInput(ns("tp1"), "Период последовательности Tп1, мкс", min = 5, max = 350, value = 5),
+                uiOutput(ns("formula"))
+      )
+    ),
+    mainPanel(
+      plotOutput(ns("output_plot1"))
+          )
   )
 }
-
 task2_server <- function(id){
   moduleServer(
     id,
